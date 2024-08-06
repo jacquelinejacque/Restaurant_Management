@@ -1,40 +1,119 @@
 <template>
-    <img class="logo" src="../assets/RestaurantLogo.png" alt="">
+  <div>
+    <img class="logo" src="../assets/RestaurantLogo.png" alt="Restaurant Logo">
     <h1>Register Here</h1>
 
     <div class="register">
-        <input type="text" placeholder="enter name">
-        <input type="email" placeholder="enter email">
-        <input type="password" placeholder="enter password">
-        <button>SignUp</button>
+      <input v-model="name" type="text" placeholder="Enter name">
+      <input v-model="phone" type="text" placeholder="Enter phone">
+      <input v-model="email" type="email" placeholder="Enter email">
+      <input v-model="password" type="password" placeholder="Enter password">
+      <button @click="signUp">Sign Up</button>
+      <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     </div>
+  </div>
 </template>
+
 <script>
-export default{
-    name:'SignUp'
-}
+import axios from 'axios';
+
+export default {
+  name: 'SignUp',
+  data() {
+    return {
+      name: '',
+      phone: '',
+      email: '',
+      password: '',
+      errorMessage: ''
+    };
+  },
+  methods: {
+    validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    },
+    signUp() {
+      // Basic validation
+      if (!this.name) {
+        this.errorMessage = "Name is required";
+        return;
+      }
+      if (!this.phone) {
+        this.errorMessage = "Phone number is required";
+        return;
+      }
+      if (!this.email) {
+        this.errorMessage = "Email is required";
+        return;
+      }
+      if (!this.validateEmail(this.email)) {
+        this.errorMessage = "Invalid email format";
+        return;
+      }
+      if (!this.password) {
+        this.errorMessage = "Password is required";
+        return;
+      }
+      if (this.password.length < 6) {
+        this.errorMessage = "Password must be at least 6 characters long";
+        return;
+      }
+
+      // Reset error message
+      this.errorMessage = '';
+
+      const user = {
+        name: this.name,
+        phone: this.phone,
+        email: this.email,
+        password: this.password
+      };
+
+      console.log("User data being sent:", user);  // Log the user data
+
+      axios.post('http://localhost:4600/api/v1/users/create', user)
+        .then(response => {
+          console.log("Response from backend:", response.data);
+          alert('User registered successfully');
+        })
+        .catch(error => {
+          console.error("Error from backend:", error.response ? error.response.data : error.message);
+          alert('Error registering user');
+        });
+    }
+  }
+};
 </script>
 
 <style>
-    .logo{
-        width: 150px;
-    }
-    .register input{
-        width: 300px;
-        height: 40px;
-        padding-left: 20px;
-        display: block;
-        margin-bottom: 30px;
-        margin-left: auto;
-        margin-right: auto;
-        border: 1px solid #7B3F00;
-    }
-    .register button{
-        width: 320px;
-        height: 40px;
-        background-color: #7B3F00;
-        border: 1px solid #7B3F00;
-        color: white;
-        cursor: pointer;
-    }
+.logo {
+  width: 150px;
+}
+
+.register input {
+  width: 300px;
+  height: 40px;
+  padding-left: 20px;
+  display: block;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #7B3F00;
+}
+
+.register button {
+  width: 320px;
+  height: 40px;
+  background-color: #7B3F00;
+  border: 1px solid #7B3F00;
+  color: white;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
 </style>
