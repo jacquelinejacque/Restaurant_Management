@@ -75,7 +75,8 @@ export default {
       axios.post('http://localhost:4600/api/v1/users/create', user)
         .then(response => {
           console.log("Response from backend:", response.data);
-          alert('User registered successfully');
+          localStorage.setItem('userToken', response.data.token); // Assuming token is returned
+          this.$router.push('/home'); // Navigate to Home.vue
         })
         .catch(error => {
           console.error("Error from backend:", error.response ? error.response.data : error.message);
@@ -84,6 +85,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style>
