@@ -1,12 +1,15 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 import User from '../Models/User.js';
+import Customer from '../Models/Customer.js';
 
 dotenv.config();
 
 class DatabaseManager {
   constructor() {
+    this.sequelize = null;
     this.user = null;
+    this.customer = null;
   }
 
   connect(callback) {
@@ -41,9 +44,14 @@ class DatabaseManager {
 
   initModels(callback) {
     try {
+      // Initialize models
       this.user = User.init(this.sequelize);
+      this.customer = Customer.init(this.sequelize);
 
-      console.log('User model initialized:', this.user !== null);
+      // Set up relationships
+      this.createRelationships();
+
+      console.log('User and Customer models initialized:', this.user !== null, this.customer !== null);
 
       this.sequelize
         .sync({ alter: false })
@@ -58,6 +66,23 @@ class DatabaseManager {
     } catch (error) {
       console.error('Error in initModels method:', error);
       callback(0);
+    }
+  }
+
+  createRelationships() {
+    try {
+      // Define relationships
+      this.user.belongsTo(this.customer, {
+        as: 'customer',
+        foreignKey: { name: 'customerID', allowNull: true },
+      });
+
+      this.customer.hasMany(this.user, {
+        as: 'users',
+        foreignKey: { name: 'customerID', allowNull: true },
+      });
+    } catch (error) {
+      console.error('Error in createRelationships method:', error);
     }
   }
 }

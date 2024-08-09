@@ -8,6 +8,17 @@
       <input v-model="phone" type="text" placeholder="Enter phone">
       <input v-model="email" type="email" placeholder="Enter email">
       <input v-model="password" type="password" placeholder="Enter password">
+      
+      <!-- User Type Selection -->
+      <select v-model="userType">
+        <option disabled value="">Select user type</option>
+        <option value="admin">Admin</option>
+        <option value="customer">Customer</option>
+      </select>
+      
+      <!-- Conditionally display creditCardNumber input -->
+      <input v-if="userType === 'customer'" v-model="creditCardNumber" type="text" placeholder="Enter credit card number">
+      
       <button @click="signUp">Sign Up</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     </div>
@@ -25,6 +36,8 @@ export default {
       phone: '',
       email: '',
       password: '',
+      userType: '',          // New userType data field
+      creditCardNumber: '',   // New creditCardNumber data field (only for customers)
       errorMessage: ''
     };
   },
@@ -59,6 +72,14 @@ export default {
         this.errorMessage = "Password must be at least 6 characters long";
         return;
       }
+      if (!this.userType) {
+        this.errorMessage = "User type is required";
+        return;
+      }
+      if (this.userType === 'customer' && !this.creditCardNumber) {
+        this.errorMessage = "Credit card number is required for customers";
+        return;
+      }
 
       // Reset error message
       this.errorMessage = '';
@@ -67,8 +88,14 @@ export default {
         name: this.name,
         phone: this.phone,
         email: this.email,
-        password: this.password
+        password: this.password,
+        userType: this.userType,
       };
+
+      // Include creditCardNumber if userType is customer
+      if (this.userType === 'customer') {
+        user.creditCardNumber = this.creditCardNumber;
+      }
 
       console.log("User data being sent:", user);  // Log the user data
 
@@ -85,7 +112,6 @@ export default {
     }
   }
 };
-
 </script>
 
 <style>
@@ -93,7 +119,8 @@ export default {
   width: 150px;
 }
 
-.register input {
+.register input,
+.register select {
   width: 300px;
   height: 40px;
   padding-left: 20px;

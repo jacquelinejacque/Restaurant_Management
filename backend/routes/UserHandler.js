@@ -10,5 +10,10 @@ UserHandler.post("/create", function (req, res) {
     res.json(result);
   });
 });
+UserHandler.post("/login", function (req, res) {
+  UserLogic.login(req.body, function (result) {
+    res.json(result);
+  });
+});
 
 export default UserHandler;

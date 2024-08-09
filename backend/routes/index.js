@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import UserHandler from './UserHandler.js'
+import CustomerHandler from './Customerhandler.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -27,7 +28,8 @@ export function init(app) {
     next()
   })
  
-  router.use('/users', UserHandler) 
+  router.use('/users', UserHandler);
+  router.use('/customers', CustomerHandler) ;
 
   router.all('/', function (request, res) {
     res.status(404)
