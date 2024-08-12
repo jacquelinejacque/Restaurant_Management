@@ -1,10 +1,10 @@
-const path = require('path');
-
+// webpack.config.js
 module.exports = {
   resolve: {
     fallback: {
-      fs: false,
-      path: require.resolve('path-browserify')
+      "fs": false,
+      "path": false
     }
   }
 };
+

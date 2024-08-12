@@ -21,6 +21,9 @@
       
       <button @click="signUp">Sign Up</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+      <p>
+        <router-link to= '/login'>Login</router-link>
+      </p>      
     </div>
   </div>
 </template>
@@ -140,6 +143,9 @@ export default {
   cursor: pointer;
 }
 
+.register p router-link{
+  color: #7B3F00;
+}
 .error {
   color: red;
   text-align: center;
