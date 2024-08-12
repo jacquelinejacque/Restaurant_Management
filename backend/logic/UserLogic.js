@@ -36,6 +36,10 @@ class UserLogic {
             done('Password is required');
             return;
           }
+          if(body.password < 6){
+            done('password must be atleast 6 characters');
+            return;
+          }
 
           DatabaseManager.user
             .findOne({

@@ -103,7 +103,7 @@ export default {
         .then(response => {
           console.log("Response from backend:", response.data);
           localStorage.setItem('userToken', response.data.token); // Assuming token is returned
-          this.$router.push('/home'); // Navigate to Home.vue
+          this.$router.push('/login'); // Navigate to login.vue
         })
         .catch(error => {
           console.error("Error from backend:", error.response ? error.response.data : error.message);
