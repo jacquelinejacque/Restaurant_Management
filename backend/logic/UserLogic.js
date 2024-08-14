@@ -120,7 +120,6 @@ class UserLogic {
     );
   }
 
-
   static login(body, callback) {
     async.waterfall(
       [
@@ -128,19 +127,27 @@ class UserLogic {
         function (done) {
           DatabaseManager.user
             .findOne({
-              attributes: ["userID", "name", "phone", "email", "password", "userType", "customerId"],
+              attributes: [
+                "userID",
+                "name",
+                "phone",
+                "email",
+                "password",
+                "userType",
+                "customerId",
+              ],
               where: {
-                email: body.username,
+                email: body.email,
               },
             })
-            .then((res) => {
-              if (!res) {
-                done("Invalid credentials");
-                return;
+            .then((user) => {
+              if (!user) {
+                return done("User not found with this email.");
               }
-              done(null, res);
+              done(null, user);
             })
             .catch((err) => {
+              console.error("Error finding user by email:", err);
               done(err);
             });
         },
@@ -163,38 +170,47 @@ class UserLogic {
                 done(null, user);
               })
               .catch((err) => {
-                console.log(err);
+                console.error("Error updating user session:", err);
                 done(err);
               });
           } else {
-            done("Invalid credentials");
+            done("Invalid credentials: Incorrect password.");
           }
         },
         // Step 3: Fetch updated user and generate JWT token
         function (user, done) {
           DatabaseManager.user
             .findOne({
-              attributes: ["userID", "name", "phone", "session", "email", "expiry", "userType", "customerId"],
+              attributes: [
+                "userID",
+                "name",
+                "phone",
+                "session",
+                "email",
+                "expiry",
+                "userType",
+                "customerId",
+              ],
               where: {
                 email: user.email,
               },
             })
-            .then((res) => {
+            .then((updatedUser) => {
               const jwtToken = jwt.sign(
                 {
-                  session: res.session,
-                  expiry: res.expiry,
-                  name: res.name,
-                  email: res.email,
-                  userType: res.userType,
+                  session: updatedUser.session,
+                  expiry: updatedUser.expiry,
+                  name: updatedUser.name,
+                  email: updatedUser.email,
+                  userType: updatedUser.userType,
                 },
                 process.env.JWT_KEY,
                 { expiresIn: process.env.JWT_EXPIRY_TIME }
               );
-              done(null, jwtToken, res);
+              done(null, jwtToken, updatedUser);
             })
             .catch((err) => {
-              console.log(err);
+              console.error("Error fetching updated user details:", err);
               done(err);
             });
         },
@@ -213,17 +229,18 @@ class UserLogic {
                 done(null, token, user);
               })
               .catch((err) => {
-                console.log(err);
+                console.error("Error fetching customer details:", err);
                 done(err);
               });
           } else {
             done(null, token, user);
           }
-        }
+        },
       ],
       // Final callback
       function (err, token, user) {
         if (err) {
+          console.error("Error during login process:", err);
           return callback({
             status: Consts.httpCodeSeverError,
             message: "Failed to login",
@@ -239,6 +256,8 @@ class UserLogic {
       }
     );
   }
+
+
 
 }
 
