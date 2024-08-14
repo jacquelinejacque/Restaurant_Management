@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 import User from '../Models/User.js';
 import Customer from '../Models/Customer.js';
+import Restaurant from '../Models/Restaurant.js'
 
 dotenv.config();
 
@@ -47,11 +48,12 @@ class DatabaseManager {
       // Initialize models
       this.user = User.init(this.sequelize);
       this.customer = Customer.init(this.sequelize);
+      this.restaurant= Restaurant.init(this.sequelize);
 
       // Set up relationships
       this.createRelationships();
 
-      console.log('User and Customer models initialized:', this.user !== null, this.customer !== null);
+      console.log('User and Customer models initialized:', this.user !== null, this.customer !== null, this.restaurant !==null);
 
       this.sequelize
         .sync({ alter: false })

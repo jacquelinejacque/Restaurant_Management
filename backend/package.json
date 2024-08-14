@@ -25,6 +25,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.0",
     "sequelize": "^6.37.3",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "validator": "^13.12.0"
   }
 }

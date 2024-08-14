@@ -7,6 +7,7 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import UserHandler from './UserHandler.js'
 import CustomerHandler from './Customerhandler.js'
+import RestaurantHandler from './RestaurantHandler.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -30,6 +31,7 @@ export function init(app) {
  
   router.use('/users', UserHandler);
   router.use('/customers', CustomerHandler) ;
+  router.use('/restaurant', RestaurantHandler) ;
 
   router.all('/', function (request, res) {
     res.status(404)
