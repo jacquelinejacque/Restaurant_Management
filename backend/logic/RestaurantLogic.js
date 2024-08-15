@@ -55,18 +55,30 @@ class RestaurantLogic {
                 data: restaurant,  // Correct variable name
             });
         });
-    }
-   
-    // listRestaurantLogic.js
+    }   
+
     static list(params, callback) {
         const offset = params.start ? parseInt(params.start) : 0;
         const limit = params.length ? parseInt(params.length) : 20;
 
-        // Updated filter to include both Active and Deleted statuses
+        // Define what is considered "recently inactivated"
+        const recentDate = new Date();
+        recentDate.setMonth(recentDate.getMonth() - 1); // e.g., within the last 30 days
+
+        // Updated filter to include both Active and Inactive statuses
         const filter = {
             status: {
-                [Op.in]: ['Active', 'Deleted']
-            }
+                [Op.in]: ['active', 'inactive']
+            },
+            [Op.or]: [
+                { status: 'active' },
+                { 
+                    status: 'inactive',
+                    updatedAt: {
+                        [Op.gte]: recentDate
+                    }
+                }
+            ]
         };
 
         if (params.name) filter.name = { [Op.like]: `%${params.name}%` };
@@ -84,7 +96,7 @@ class RestaurantLogic {
             function (totalRecords, done) {
                 DatabaseManager.restaurant.findAll({
                     attributes: [
-                        'restaurantID', 'name', 'location', 'phone', 'status'
+                        'restaurantID', 'name', 'location', 'phone', 'status', 'updatedAt'
                     ],
                     where: filter,
                     offset,
@@ -108,39 +120,14 @@ class RestaurantLogic {
                 });
             }
 
-            // Refresh database to ensure the list reflects current status
-            DatabaseManager.restaurant.findAll({
-                attributes: [
-                    'restaurantID', 'name', 'location', 'phone', 'status'
-                ],
-                where: {
-                    status: {
-                        [Op.in]: ['Active', 'Deleted']
-                    }
-                },
-                order: [['name', 'ASC']]
-            })
-            .then(refreshedRestaurants => {
-                return callback({
-                    status: Consts.httpCodeSuccess,
-                    data: refreshedRestaurants,
-                    recordsTotal: totalRecords,
-                    recordsFiltered: totalRecords,
-                });
-            })
-            .catch(err => {
-                return callback({
-                    status: Consts.httpCodeServerError,
-                    message: 'Failed to refresh restaurant list',
-                    error: err,
-                    data: [],
-                    recordsTotal: 0,
-                    recordsFiltered: 0,
-                });
+            return callback({
+                status: Consts.httpCodeSuccess,
+                data: restaurants,
+                recordsTotal: totalRecords,
+                recordsFiltered: totalRecords,
             });
         });
     }
-
 
     // RestaurantUpdateLogic.js
     static async update(body, callback = (result) => {}) {
@@ -213,51 +200,49 @@ class RestaurantLogic {
         }
     }
 
-// deleteRestaurantLogic.js
-static deleteById(restaurantID, callback) {
-    async.waterfall([
-        function (done) {
-            DatabaseManager.restaurant.findByPk(restaurantID)
-                .then(restaurant => {
-                    if (!restaurant) {
-                        // Restaurant not found
-                        return done(new Error("Restaurant not found for ID: " + restaurantID));
-                    }
-                    if (restaurant.status === "Deleted") {
-                        // Restaurant already deleted
-                        return done(new Error("Restaurant already deleted for ID: " + restaurantID));
-                    }
-                    // Proceed with deletion
-                    done(null, restaurant);
-                })
-                .catch(err => done(err));
-        },
-        function (restaurant, done) {
-            // Update the status to 'Deleted'
-            restaurant.update({ status: "Deleted" })
-                .then(updatedRestaurant => {
-                    // Confirm that the status has been updated correctly
-                    console.log('Updated Restaurant:', updatedRestaurant);
-                    done(null, updatedRestaurant);
-                })
-                .catch(err => done(err));
-        }
-    ], function (err, updatedRestaurant) {
-        if (err) {
-            return callback({
-                status: Consts.httpCodeServerError,
-                message: err.message || 'Failed to mark restaurant as deleted',
-                error: err.message || err,
-            });
-        }
+    static delete(restaurantID, callback) {
+        async.waterfall([
+            function (done) {
+                if (Utils.isEmpty(restaurantID)) {
+                    return done("Restaurant ID is required.");
+                }
+                done(null);
+            },
 
-        return callback({
-            status: Consts.httpCodeSuccess,
-            message: "Restaurant status updated to 'Deleted'",
-            data: updatedRestaurant,
+            // Using a transaction to ensure consistency
+            function (done) {
+                DatabaseManager.sequelize.transaction(t => {
+                    return DatabaseManager.restaurant.findOne({
+                        where: { restaurantID: restaurantID, status: 'active' },
+                        transaction: t
+                    }).then(restaurant => {
+                        if (!restaurant) {
+                            throw new Error("Restaurant not found or already inactivated.");
+                        }
+                        return restaurant.update({ status: 'inactive' }, { transaction: t });
+                    });
+                })
+                .then(updatedRestaurant => done(null, updatedRestaurant))
+                .catch(err => done(err));
+            }
+        ], 
+        function (err, updatedRestaurant) {
+            if (err) {
+                console.error('Error inactivating restaurant:', err);
+                return callback({
+                    status: Consts.httpCodeServerError, 
+                    message: 'Error in inactivating restaurant',
+                    error: err,
+                });
+            }
+
+            return callback({
+                status: Consts.httpCodeSuccess,
+                message: "Restaurant inactivating successfully",
+                data: updatedRestaurant,
+            });
         });
-    });
-}
+    }
 
 
 }

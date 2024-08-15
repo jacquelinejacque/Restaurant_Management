@@ -29,7 +29,7 @@ RestaurantHandler.post('/update', (req, res) => {
 RestaurantHandler.delete("/delete/:id", (req, res) => {
     const restaurantId = req.params.id;
 
-    RestaurantLogic.deleteById(restaurantId, (result) => {
+    RestaurantLogic.delete(restaurantId, (result) => {
         res.json(result);
     });
 });

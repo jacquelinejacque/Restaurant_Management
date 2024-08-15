@@ -4,7 +4,7 @@ import SignUp from './components/SignUp.vue';
 import Login from './components/Login.vue';
 import Add from './components/Add.vue';
 import Edit from './components/Edit.vue';
-import Delete from './components/Delete.vue';
+
 
 const routes = [
   { path: '/home', component: Home, name:'HomePage'}, // Updated component name here
@@ -12,7 +12,7 @@ const routes = [
   { path: '/login', component: Login, name: 'LoginPage' },
   { path: '/add', component: Add, name: 'AddRestaurant' },
   { path: '/edit', component: Edit, name: 'EditRestaurant' },
-  { path: '/delete', component: Delete, name: 'DeleteRestaurant' },
+
   
 ];
 

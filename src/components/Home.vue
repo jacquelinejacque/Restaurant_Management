@@ -30,6 +30,7 @@
   </table>
 </template>
 
+
 <script>
 import Header from './AdminHeader.vue';
 import axios from 'axios';
@@ -69,8 +70,13 @@ export default {
       try {
         const response = await axios.delete(`http://localhost:4600/api/v1/restaurant/delete/${restaurantID}`);
         console.log("Delete response:", response);
-        // Refresh the list after deletion
-        this.restaurant = this.restaurant.filter(item => item.restaurantID !== restaurantID);
+
+        // Update the local state to reflect the status change
+        this.restaurant = this.restaurant.map(item => 
+          item.restaurantID === restaurantID
+            ? { ...item, status: 'inactive' }
+            : item
+        );
       } catch (error) {
         console.error("Failed to delete restaurant:", error);
       }

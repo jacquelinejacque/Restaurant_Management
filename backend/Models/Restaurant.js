@@ -20,9 +20,9 @@ class Restaurant {
                 type: DataTypes.STRING,
             },
             status: {
-                type: DataTypes.ENUM('Active', 'Deleted'),  // Ensure 'Deleted' is included
-                defaultValue: 'Active',
-                allowNull: false,  // This should be 'false' (boolean) not 'false' (string)
+                type: DataTypes.ENUM('active', 'inactive'),
+                defaultValue: 'active',
+                allowNull: false,  // This ensures that status cannot be null
             },
         });
     }
