@@ -19,4 +19,19 @@ RestaurantHandler.get("/list", (req, res) => {
     });
 });
 
+//Route for updating restaurant
+RestaurantHandler.post('/update', (req, res) => {
+    RestaurantLogic.update(req.body, (result) => {
+        res.status(result.status).json(result);
+    });
+});
+// Route handler for deleting a restaurant
+RestaurantHandler.delete("/delete/:id", (req, res) => {
+    const restaurantId = req.params.id;
+
+    RestaurantLogic.deleteById(restaurantId, (result) => {
+        res.json(result);
+    });
+});
+
 export default RestaurantHandler;

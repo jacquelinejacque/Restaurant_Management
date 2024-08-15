@@ -1,9 +1,9 @@
 <template>
-    <h1>Update Restaurant</h1>
+    <h1>Delete Restaurant</h1>
 </template>
 
 <script>
     export default{
-        name: 'UpdateRestaurant'
+        name: 'DeleteRestaurant'
     }
 </script>

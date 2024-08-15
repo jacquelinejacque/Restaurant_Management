@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 
 class Restaurant {
-    static init (sequelize){
+    static init(sequelize) {
         return sequelize.define("Restaurant", {
             restaurantID: {
                 type: DataTypes.UUID,
@@ -20,11 +20,12 @@ class Restaurant {
                 type: DataTypes.STRING,
             },
             status: {
-                type: DataTypes.ENUM,
-                values: ['active', 'inactive'],
-                defaultValue: 'active',
+                type: DataTypes.ENUM('Active', 'Deleted'),  // Ensure 'Deleted' is included
+                defaultValue: 'Active',
+                allowNull: false,  // This should be 'false' (boolean) not 'false' (string)
             },
-        })
+        });
     }
 }
+
 export default Restaurant;
