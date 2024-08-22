@@ -129,70 +129,71 @@ class RestaurantLogic {
         });
     }
 
-    static async update(restaurantID, body, callback = (result) => {}) {
-        try {
-            async.waterfall([
-                function (done) {
-                    if (Utils.isEmpty(restaurantID)) {
-                        return done("Restaurant ID is required");
-                    }
-                    if (Utils.isEmpty(body.name)) {
-                        return done("Name is required.");
-                    }
-                    if (Utils.isEmpty(body.location)) {
-                        return done("Location is required.");
-                    }
-                    if (Utils.isEmpty(body.phone) || !validator.isNumeric(`${body.phone}`)) {
-                        return done("Phone is required and must be numeric.");
-                    }
-                    done(null);
-                },
-                function (done) {
-                    DatabaseManager.restaurant.findOne({
-                        where: { restaurantId: restaurantID },
-                    }).then(restaurant => {
-                        if (Utils.isEmpty(restaurant)) {
-                            return done('Restaurant not found');
-                        }
-                        done(null, restaurant);
-                    }).catch(err => done(err));
-                },
-                function (restaurant, done) {
-                    DatabaseManager.restaurant.update({
-                        name: body.name,
-                        location: body.location,
-                        phone: body.phone,
-                        status: body.status,
-                    }, {
-                        where: { restaurantId: restaurantID }
-                    })
-                    .then(() => done(null, restaurant))
-                    .catch(err => done(err));
+static async update(restaurantID, body, callback = (result) => {}) {
+    try {
+        async.waterfall([
+            function (done) {
+                if (Utils.isEmpty(restaurantID)) {
+                    return done("Restaurant ID is required");
                 }
-            ], function (err, restaurant) {
-                if (err) {
-                    return callback({
-                        status: Consts.httpCodeServerError,
-                        message: 'Error in updating restaurant',
-                        error: err,
-                    });
+                if (Utils.isEmpty(body.name)) {
+                    return done("Name is required.");
                 }
-
+                if (Utils.isEmpty(body.location)) {
+                    return done("Location is required.");
+                }
+                if (Utils.isEmpty(body.phone) || !validator.isNumeric(`${body.phone}`)) {
+                    return done("Phone is required and must be numeric.");
+                }
+                done(null);
+            },
+            function (done) {
+                DatabaseManager.restaurant.findOne({
+                    where: { restaurantID: restaurantID }, // Use restaurantID
+                }).then(restaurant => {
+                    if (Utils.isEmpty(restaurant)) {
+                        return done('Restaurant not found');
+                    }
+                    done(null, restaurant);
+                }).catch(err => done(err));
+            },
+            function (restaurant, done) {
+                DatabaseManager.restaurant.update({
+                    name: body.name,
+                    location: body.location,
+                    phone: body.phone,
+                    status: body.status,
+                }, {
+                    where: { restaurantID: restaurantID } // Use restaurantID
+                })
+                .then(() => done(null, restaurant))
+                .catch(err => done(err));
+            }
+        ], function (err, restaurant) {
+            if (err) {
                 return callback({
-                    status: Consts.httpCodeSuccess,
-                    message: "Restaurant updated successfully",
-                    data: restaurant,
+                    status: Consts.httpCodeServerError,
+                    message: 'Error in updating restaurant',
+                    error: err,
                 });
-            });
-        } catch (err) {
-            console.error("Error in updating restaurant:", err);
+            }
+
             return callback({
-                status: Consts.httpCodeServerError,
-                message: "Failed to update restaurant",
-                error: err.message,
+                status: Consts.httpCodeSuccess,
+                message: "Restaurant updated successfully",
+                data: restaurant,
             });
-        }
+        });
+    } catch (err) {
+        console.error("Error in updating restaurant:", err);
+        return callback({
+            status: Consts.httpCodeServerError,
+            message: "Failed to update restaurant",
+            error: err.message,
+        });
     }
+}
+
     
     // Get restaurant by Id
     static getRestaurantById(restaurantId, callback) {

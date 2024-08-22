@@ -24,7 +24,7 @@ export function init(app) {
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With,accept, Content-Type,access-token,Authorization'
     )
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE')
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT')
 
     next()
   })

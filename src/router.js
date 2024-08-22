@@ -4,6 +4,7 @@ import SignUp from './components/SignUp.vue';
 import Login from './components/Login.vue';
 import Add from './components/Add.vue';
 import Edit from './components/Edit.vue';
+import RestaurantDetails from './components/RestaurantDetails.vue'; 
 
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
   { path: '/login', component: Login, name: 'LoginPage' },
   { path: '/add', component: Add, name: 'AddRestaurant' },
   { path: '/edit/:id', component: Edit, name: 'EditRestaurant' },
+  { path: '/restaurant/:id', component: RestaurantDetails, name: 'RestaurantDetails' }, 
 
   
 ];
