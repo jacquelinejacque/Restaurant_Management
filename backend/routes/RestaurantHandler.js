@@ -19,6 +19,12 @@ RestaurantHandler.get("/list", (req, res) => {
     });
 });
 
+//list restaurant  by Id
+RestaurantHandler.get("/list/:restaurantId", (req, res) => {
+    RestaurantLogic.getRestaurantById(req.params.restaurantId, (result) => {  
+        res.json(result);
+    });
+});
 // RestaurantUpdateRoute.js
 RestaurantHandler.put('/update/:id', (req, res) => {
     RestaurantLogic.update(req.params.id, req.body, (result) => {

@@ -129,28 +129,25 @@ class RestaurantLogic {
         });
     }
 
-    // RestaurantUpdateLogic.js
     static async update(restaurantID, body, callback = (result) => {}) {
         try {
             async.waterfall([
                 function (done) {
-                    // Validation logic
                     if (Utils.isEmpty(restaurantID)) {
                         return done("Restaurant ID is required");
                     }
                     if (Utils.isEmpty(body.name)) {
-                        return done("Name is required and should be in characters.");
+                        return done("Name is required.");
                     }
-                    if (Utils.isEmpty(body.location) || !validator.isLength(body.location, { min: 1 })) {
+                    if (Utils.isEmpty(body.location)) {
                         return done("Location is required.");
                     }
-                    if (Utils.isEmpty(body.phone) || !validator.isNumeric(`${body.phone}`, { min: 1 })) {
-                        return done("Phone is required.");
+                    if (Utils.isEmpty(body.phone) || !validator.isNumeric(`${body.phone}`)) {
+                        return done("Phone is required and must be numeric.");
                     }
                     done(null);
                 },
                 function (done) {
-                    // Validate the restaurant exists
                     DatabaseManager.restaurant.findOne({
                         where: { restaurantId: restaurantID },
                     }).then(restaurant => {
@@ -161,43 +158,59 @@ class RestaurantLogic {
                     }).catch(err => done(err));
                 },
                 function (restaurant, done) {
-                    // Update the restaurant
-                    DatabaseManager.restaurant
-                        .update({
-                            name: body.name,
-                            location: body.location,
-                            phone: body.phone,
-                            status: body.status,
-                        }, {
-                            where: { restaurantId: restaurantID }
-                        })
-                        .then(() => done(null, restaurant))
-                        .catch(err => done(err));
+                    DatabaseManager.restaurant.update({
+                        name: body.name,
+                        location: body.location,
+                        phone: body.phone,
+                        status: body.status,
+                    }, {
+                        where: { restaurantId: restaurantID }
+                    })
+                    .then(() => done(null, restaurant))
+                    .catch(err => done(err));
                 }
             ], function (err, restaurant) {
                 if (err) {
                     return callback({
-                        status: Consts.httpCodeServerError, // Ensure this value exists
+                        status: Consts.httpCodeServerError,
                         message: 'Error in updating restaurant',
                         error: err,
                     });
                 }
 
                 return callback({
-                    status: Consts.httpCodeSuccess, // Ensure this value exists
+                    status: Consts.httpCodeSuccess,
                     message: "Restaurant updated successfully",
                     data: restaurant,
                 });
             });
-
         } catch (err) {
             console.error("Error in updating restaurant:", err);
             return callback({
-                status: Consts.httpCodeServerError, // Ensure this value exists
+                status: Consts.httpCodeServerError,
                 message: "Failed to update restaurant",
                 error: err.message,
             });
         }
+    }
+    
+    // Get restaurant by Id
+    static getRestaurantById(restaurantId, callback) {
+        DatabaseManager.restaurant.findOne({
+            attributes: ['restaurantID', 'name', 'location', 'phone', 'status'],
+            where: { restaurantID: restaurantId }
+        })
+        .then(restaurant => {
+            if (restaurant) {
+                callback({ status: Consts.httpCodeSuccess, restaurant });
+            } else {
+                callback({ status: Consts.httpCodeNotFound, message: 'Restaurant not found' });
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching restaurant by ID:', err);
+            callback({ status: Consts.httpCodeServerError, message: 'An error occurred while fetching the restaurant' });
+        });
     }
 
 
