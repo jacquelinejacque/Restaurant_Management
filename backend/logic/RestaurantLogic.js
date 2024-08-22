@@ -130,12 +130,12 @@ class RestaurantLogic {
     }
 
     // RestaurantUpdateLogic.js
-    static async update(body, callback = (result) => {}) {
+    static async update(restaurantID, body, callback = (result) => {}) {
         try {
             async.waterfall([
                 function (done) {
                     // Validation logic
-                    if (Utils.isEmpty(body.restaurantID)) {
+                    if (Utils.isEmpty(restaurantID)) {
                         return done("Restaurant ID is required");
                     }
                     if (Utils.isEmpty(body.name)) {
@@ -152,7 +152,7 @@ class RestaurantLogic {
                 function (done) {
                     // Validate the restaurant exists
                     DatabaseManager.restaurant.findOne({
-                        where: { restaurantId: body.restaurantID },
+                        where: { restaurantId: restaurantID },
                     }).then(restaurant => {
                         if (Utils.isEmpty(restaurant)) {
                             return done('Restaurant not found');
@@ -169,7 +169,7 @@ class RestaurantLogic {
                             phone: body.phone,
                             status: body.status,
                         }, {
-                            where: { restaurantId: body.restaurantID }
+                            where: { restaurantId: restaurantID }
                         })
                         .then(() => done(null, restaurant))
                         .catch(err => done(err));
@@ -199,6 +199,7 @@ class RestaurantLogic {
             });
         }
     }
+
 
     static delete(restaurantID, callback) {
         async.waterfall([

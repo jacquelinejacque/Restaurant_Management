@@ -11,7 +11,7 @@ const routes = [
   { path: '/', component: SignUp, name: 'SignUp' },
   { path: '/login', component: Login, name: 'LoginPage' },
   { path: '/add', component: Add, name: 'AddRestaurant' },
-  { path: '/edit', component: Edit, name: 'EditRestaurant' },
+  { path: '/edit/:id', component: Edit, name: 'EditRestaurant' },
 
   
 ];
