@@ -21,7 +21,23 @@ class RestaurantLogic {
                 if (Utils.isEmpty(body.phone)) {
                     return done("Phone number is required.");
                 }
-                done(null);
+                DatabaseManager.restaurant
+                    .findOne({
+                        where: {
+                            name: body.name
+                        },
+                    })
+                    .then((res) => {
+                        if (res !== null) { 
+                            done("Restaurant with similar details already exists");
+                            return;
+                        }
+                        done(null); 
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+               
             },
 
             // Step 2: Create Restaurant
