@@ -2,20 +2,23 @@
   <Header/>
   <h1>Edit Restaurant Details</h1>
   <form @submit.prevent="updateRestaurant">
-    <div>
-      <label for="name">Name:</label>
-      <input v-model="restaurant.name" id="name" required />
+    <div class="add">
+      <div>
+        <label for="name">Name:</label>
+        <input v-model="restaurant.name" id="name" required />
+      </div>
+      <div>
+        <label for="location">Location:</label>
+        <input v-model="restaurant.location" id="location" required />
+      </div>
+      <div>
+        <label for="phone">Phone:</label>
+        <input v-model="restaurant.phone" id="phone" required />
+      </div>
+      <button type="submit">Update</button>
+      <button @click="cancelEdit">Cancel</button>
     </div>
-    <div>
-      <label for="location">Location:</label>
-      <input v-model="restaurant.location" id="location" required />
-    </div>
-    <div>
-      <label for="phone">Phone:</label>
-      <input v-model="restaurant.phone" id="phone" required />
-    </div>
-    <button type="submit">Update</button>
-    <button @click="cancelEdit">Cancel</button>
+
   </form>
 </template>
 
@@ -38,6 +41,7 @@ export default {
       },
     };
   },
+
 async mounted() {
   const restaurantID = this.$route.params.id;
   try {
@@ -66,3 +70,36 @@ async mounted() {
   },
 };
 </script>
+
+
+
+<style>
+
+
+.add input {
+  width: 300px;
+  height: 40px;
+  padding-left: 20px;
+  display: block;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #7B3F00;
+}
+
+.add button {
+  width: 150px;
+  height: 40px;
+  background-color: #7B3F00;
+  border: 1px solid #7B3F00;
+  color: white;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+</style>

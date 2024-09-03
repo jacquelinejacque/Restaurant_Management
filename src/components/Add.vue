@@ -1,6 +1,6 @@
 <template>
+    <Header/>
   <div>
-    <img class="logo" src="../assets/RestaurantLogo.png" alt="Restaurant Logo">
     <h1>Add A New Restaurant</h1>
 
     <div class="add">
@@ -16,6 +16,7 @@
 
 <script>
 import axios from 'axios';
+import Header from './AdminHeader.vue';
 
 export default {
   name: 'AddRestaurant',
@@ -27,6 +28,9 @@ export default {
       errorMessage: ''
     };
   },
+    components: {
+        Header,
+    },
   methods: {
     async checkRestaurantExists(name) {
       try {
@@ -86,10 +90,6 @@ export default {
 </script>
 
 <style>
-.logo {
-  width: 150px;
-}
-
 .add input {
   width: 300px;
   height: 40px;
