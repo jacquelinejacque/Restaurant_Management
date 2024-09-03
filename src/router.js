@@ -3,7 +3,7 @@ import Home from './components/Home.vue'; // Updated import to match the new com
 import SignUp from './components/SignUp.vue';
 import Login from './components/Login.vue';
 import Add from './components/Add.vue';
-import Edit from './components/Edit.vue';
+import Edit from './components/EditRestaurant.vue';
 import RestaurantDetails from './components/RestaurantDetails.vue'; 
 
 

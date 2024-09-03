@@ -25,7 +25,7 @@ RestaurantHandler.get("/list/:restaurantId", (req, res) => {
         res.json(result);
     });
 });
-// RestaurantUpdateRoute.js
+// RestaurantUpdate
 RestaurantHandler.put('/update/:id', (req, res) => {
     RestaurantLogic.update(req.params.id, req.body, (result) => {
         res.status(result.status).json(result);

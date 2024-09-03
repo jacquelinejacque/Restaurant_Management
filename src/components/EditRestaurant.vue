@@ -38,27 +38,26 @@ export default {
       },
     };
   },
-  async mounted() {
-    const restaurantID = this.$route.params.id;
-    try {
-      const response = await axios.get(`http://localhost:4600/api/v1/restaurant/${restaurantID}`);
-      this.restaurant = response.data.data;
-    } catch (error) {
-      console.error('Failed to fetch restaurant data:', error);
-      // Optionally show an error message to the user
-    }
-  },
+async mounted() {
+  const restaurantID = this.$route.params.id;
+  try {
+    const response = await axios.get(`http://localhost:4600/api/v1/restaurant/list/${restaurantID}`);
+    this.restaurant = response.data.restaurant; // Assuming the response structure
+  } catch (error) {
+    console.error('Failed to fetch restaurant data:', error);
+    alert('Could not fetch restaurant details. Please try again later.');
+  }
+},
   methods: {
     async updateRestaurant() {
       const restaurantID = this.$route.params.id;
       try {
         const response = await axios.put(`http://localhost:4600/api/v1/restaurant/update/${restaurantID}`, this.restaurant);
-
         console.log('Restaurant updated:', response.data);
         this.$router.push({ name: 'HomePage' });
       } catch (error) {
         console.error('Failed to update restaurant:', error);
-        // Optionally show an error message to the user
+        alert('Could not update restaurant details. Please try again later.');
       }
     },
     cancelEdit() {

@@ -49,6 +49,7 @@ export default {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return re.test(email);
     },
+  
     signUp() {
       // Basic validation
       if (!this.name) {
